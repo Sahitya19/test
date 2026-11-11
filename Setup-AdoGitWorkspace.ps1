@@ -1,16 +1,16 @@
 <#
 .SYNOPSIS
   Arranges the three Copilot kits (copilot-timeline, copilot-artifacts, copilot-migration) into one
-  VS Code workspace at C:\repos\ADO-GIT so Copilot Chat finds the prompts and instructions.
+  VS Code workspace (default: the folder this script sits in, e.g. C:\repos\mix\ADO-GIT) so Copilot Chat finds the prompts and instructions.
 
 .DESCRIPTION
   Only unzips and copies. Nothing is deleted or overwritten outside the workspace folder.
   Run it from a PowerShell or VS Code terminal:
     Set-ExecutionPolicy -Scope Process Bypass
-    C:\repos\ADO-GIT\Setup-AdoGitWorkspace.ps1
+    C:\repos\mix\ADO-GIT\Setup-AdoGitWorkspace.ps1
 #>
 [CmdletBinding()]
-param([string]$Workspace = 'C:\repos\ADO-GIT')
+param([string]$Workspace = $(if ($PSScriptRoot) { $PSScriptRoot } else { 'C:\repos\mix\ADO-GIT' }))
 
 $ErrorActionPreference = 'Stop'
 if (-not (Test-Path $Workspace)) { throw "Folder $Workspace not found. Create it and put the kit zips or folders in it." }
