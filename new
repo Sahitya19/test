@@ -1,0 +1,21 @@
+That usually means the VDI’s winget doesn’t have the public package source, which is common on locked-down machines. Try this once:
+
+winget source list
+winget install --id GitHub.cli -e --source winget
+
+If the list doesn’t include a source called winget, or you get the same error, skip winget and use the portable version instead. It needs no admin rights. Paste this into the VS Code terminal:
+
+$dir = 'C:\repos\mix\tools\gh'
+New-Item -ItemType Directory -Force $dir | Out-Null
+$rel = Invoke-RestMethod https://api.github.com/repos/cli/cli/releases/latest
+$asset = $rel.assets | Where-Object { $_.name -like '*_windows_amd64.zip' } | Select-Object -First 1
+Invoke-WebRequest $asset.browser_download_url -OutFile "$dir\gh.zip"
+Expand-Archive "$dir\gh.zip" -DestinationPath $dir -Force
+$bin = (Get-ChildItem $dir -Recurse -Filter gh.exe | Select-Object -First 1).DirectoryName
+$env:Path += ";$bin"
+$u = [Environment]::GetEnvironmentVariable('Path','User'); [Environment]::SetEnvironmentVariable('Path', "$u;$bin", 'User')
+gh --version
+
+If the download fails (blocked by a proxy or policy), open https://github.com/cli/cli/releases/latest in the VDI browser instead. Download the file ending in windows_amd64.zip, extract it to C:\repos\mix\tools\gh, then run only the last four lines above. If the browser download is blocked too, it’s an IT request for “GitHub CLI”.
+
+You don’t need this for tonight, so you can leave it until after the call.
